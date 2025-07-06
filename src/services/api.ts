@@ -1,7 +1,7 @@
 // API service for CRUD operations
 import { User, Product, Order } from '../types';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 class ApiService {
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
@@ -15,13 +15,18 @@ class ApiService {
     };
 
     try {
+      console.log(`Making API request to: ${url}`);
       const response = await fetch(url, config);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error(`API Error ${response.status}:`, errorText);
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
       
-      return await response.json();
+      const data = await response.json();
+      console.log(`API response from ${endpoint}:`, data);
+      return data;
     } catch (error) {
       console.error('API request failed:', error);
       throw error;
@@ -118,6 +123,11 @@ class ApiService {
   // Dashboard stats
   async getDashboardStats() {
     return this.request('/dashboard/stats');
+  }
+
+  // Health check
+  async healthCheck() {
+    return this.request('/health');
   }
 }
 
