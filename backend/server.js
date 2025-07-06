@@ -20,12 +20,12 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Database connection
+// Database connection dengan kredensial hosting Anda
 const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'admin_panel',
+  user: process.env.DB_USER || 'karnssset_hfmedia',
+  password: process.env.DB_PASSWORD || 'i=#6[T57v)4]RgRk',
+  database: process.env.DB_NAME || 'karnssset_hfmedia',
   port: parseInt(process.env.DB_PORT || '3306'),
   waitForConnections: true,
   connectionLimit: 10,
@@ -38,10 +38,13 @@ const pool = mysql.createPool(dbConfig);
 async function testConnection() {
   try {
     const connection = await pool.getConnection();
-    console.log('✅ Database connected successfully');
+    console.log('✅ Database connected successfully to:', dbConfig.database);
+    console.log('✅ Host:', dbConfig.host);
+    console.log('✅ User:', dbConfig.user);
     connection.release();
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
+    console.error('❌ Config:', { host: dbConfig.host, user: dbConfig.user, database: dbConfig.database });
   }
 }
 
@@ -252,11 +255,17 @@ app.delete('/api/orders/:id', async (req, res) => {
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    database: dbConfig.database,
+    host: dbConfig.host
+  });
 });
 
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🔗 API URL: http://localhost:${PORT}/api`);
   testConnection();
 });
