@@ -1,7 +1,7 @@
 // API service for CRUD operations
 import { User, Product, Order } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.VITE_APP_API_URL || 'http://localhost:3001/api';
 
 class ApiService {
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
@@ -15,7 +15,7 @@ class ApiService {
     };
 
     try {
-      console.log(`Making API request to: ${url}`);
+      console.log(`Melakukan request API ke: ${url}`);
       const response = await fetch(url, config);
       
       if (!response.ok) {
@@ -25,10 +25,10 @@ class ApiService {
       }
       
       const data = await response.json();
-      console.log(`API response from ${endpoint}:`, data);
+      console.log(`Response API dari ${endpoint}:`, data);
       return data;
     } catch (error) {
-      console.error('API request failed:', error);
+      console.error('Request API gagal:', error);
       throw error;
     }
   }
